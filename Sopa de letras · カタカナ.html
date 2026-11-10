@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sopa de letras · カタカナ</title>
+<style>
+:root{--bg:#faf9f7;--card:#fff;--ink:#222;--mute:#8a8a85;--line:#e7e4df;--acc:#d6453d;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#161615;--card:#1f1f1e;--ink:#f1efeb;--mute:#8f8e89;--line:#323230;--acc:#ff6b61;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#161615;--card:#1f1f1e;--ink:#f1efeb;--mute:#8f8e89;--line:#323230;--acc:#ff6b61;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Hiragino Sans","Noto Sans JP","Yu Gothic",system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.4}
+.wrap{max-width:980px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:1.4rem;font-weight:600;margin:0 0 4px;letter-spacing:.02em}
+h1 span{color:var(--acc)}
+p.sub{margin:0 0 18px;color:var(--mute);font-size:.92rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px}
+#start{max-width:420px;margin:8vh auto 0;text-align:center}
+#start .big{font-size:3rem;margin-bottom:4px}
+label{display:block;text-align:left;font-size:.82rem;color:var(--mute);margin:12px 0 4px}
+input{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit}
+input:focus{outline:2px solid var(--acc);outline-offset:1px}
+button{font:inherit;cursor:pointer;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:9px 14px}
+button.p{background:var(--acc);border-color:var(--acc);color:#fff;width:100%;margin-top:18px;padding:12px}
+button.on{border-color:var(--acc);color:var(--acc)}
+#game{display:none}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:14px}
+.bar .btns{display:flex;flex-wrap:wrap;gap:8px}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;align-items:start}
+@media(max-width:760px){.layout{grid-template-columns:1fr}}
+#grid{display:grid;grid-template-columns:repeat(12,1fr);gap:2px;touch-action:none;user-select:none;-webkit-user-select:none;width:100%;max-width:560px;margin:0 auto}
+.c{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:6px;font-size:clamp(14px,4.4vw,24px);cursor:pointer;position:relative}
+.c.sel{background:color-mix(in srgb,var(--acc) 22%,transparent);box-shadow:inset 0 -3px 0 var(--acc)}
+.c.f{background:color-mix(in srgb,var(--fc) 32%,transparent);box-shadow:inset 0 -3px 0 var(--fc);font-weight:600}
+.ans .c.a:not(.f){outline:1.5px dashed var(--mute);outline-offset:-2px}
+.list{display:grid;gap:6px}
+.list h3{margin:10px 0 2px;font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:var(--mute);font-weight:500}
+.w{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--line);border-radius:10px}
+.w .e{font-size:1.6rem;line-height:1}
+.w .t{flex:1;min-width:0}
+.w .n{font-weight:500}
+.w .k{display:none;font-size:.95rem;color:var(--acc)}
+.showk .w .k{display:block}
+.w.d .n,.w.d .k{text-decoration:line-through;text-decoration-thickness:2px}
+.w.d{opacity:.5}
+#toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 18px);transform:translate(-50%,-140%);background:var(--ink);color:var(--bg);padding:10px 20px;border-radius:999px;transition:transform .3s;z-index:5;font-size:1.05rem;text-align:center;max-width:90vw}
+#toast.s{transform:translate(-50%,0)}
+#end{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9;align-items:center;justify-content:center;padding:16px}
+#end .card{max-width:400px;text-align:center}
+#end h2{font-size:1.9rem;margin:6px 0}
+#end a{display:block;text-decoration:none;text-align:center;background:var(--acc);color:#fff;padding:12px;border-radius:10px;margin-top:14px}
+.hint{font-size:.78rem;color:var(--mute);margin-top:10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section id="start" class="card">
+    <div class="big">🎌</div>
+    <h1>ワードサーチ · <span>カタカナ</span></h1>
+    <p class="sub">Encuentra palabras en inglés y español escritas en katakana.</p>
+    <form id="f">
+      <label for="nm">Nombre</label>
+      <input id="nm" required maxlength="60" autocomplete="name">
+      <label for="em">Correo electrónico</label>
+      <input id="em" type="email" required autocomplete="email">
+      <button class="p" type="submit">Empezar</button>
+    </form>
+    <p class="hint">Al terminar podrás enviar tus respuestas a tu correo.</p>
+  </section>
+
+  <section id="game">
+    <div class="bar">
+      <div><h1>ワードサーチ · <span>カタカナ</span></h1><p class="sub" id="hi" style="margin:0"></p></div>
+      <div class="btns">
+        <button id="bk">Ver katakana</button>
+        <button id="ba">Ver respuestas</button>
+        <button id="br">Reiniciar</button>
+      </div>
+    </div>
+    <div class="layout">
+      <div class="card"><div id="grid"></div><p class="hint" style="text-align:center">Desliza sobre las letras en cualquier dirección.</p></div>
+      <div class="card"><div class="list" id="list"></div><p class="hint" id="cnt"></p></div>
+    </div>
+  </section>
+</div>
+<div id="toast"></div>
+<div id="end"><div class="card"><div style="font-size:3rem">🎉</div><h2>おめでとう！</h2><p>よくできました！<br><small style="color:var(--mute)">¡Completaste la sopa de letras!</small></p><a id="mail" href="#">Enviar mis respuestas por correo</a><button class="p" id="again">Jugar otra vez</button></div></div>
+
+<script>
+const WORDS=[
+ {k:'ペット',n:'Pet',l:'Inglés',e:'🐶'},
+ {k:'ストロベリー',n:'Strawberry',l:'Inglés',e:'🍓'},
+ {k:'アイスクリーム',n:'Ice cream',l:'Inglés',e:'🍦'},
+ {k:'コーヒー',n:'Coffee',l:'Inglés',e:'☕'},
+ {k:'ミルク',n:'Milk',l:'Inglés',e:'🥛'},
+ {k:'チョコレート',n:'Chocolate',l:'Español',e:'🍫'},
+ {k:'メキシコ',n:'México',l:'Español',e:'🌵'},
+ {k:'タコス',n:'Tacos',l:'Español',e:'🌮'},
+ {k:'バナナ',n:'Banana',l:'Español',e:'🍌'},
+ {k:'トマト',n:'Tomate',l:'Español',e:'🍅'}];
+const PRAISE=['すごい！','やったね！','すばらしい！','いいね！','さすが！','よくできました！'];
+const KANA=Array.from('アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワン');
+const DIRS=[[0,1],[1,0],[0,-1],[-1,0],[1,1],[-1,1],[1,-1],[-1,-1]];
+const N=12;
+let G,placed,found,path,start,user={};
+const $=id=>document.getElementById(id);
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+
+function build(){
+  for(;;){
+    G=Array.from({length:N},()=>Array(N).fill(null));placed=[];
+    const ds=shuffle(DIRS.concat(shuffle(DIRS.slice()).slice(0,2)));
+    let ok=true;
+    const order=shuffle(WORDS.map((w,i)=>i));
+    for(let q=0;q<order.length&&ok;q++){
+      const i=order[q],chars=Array.from(WORDS[i].k),[dr,dc]=ds[q];let done=false;
+      for(let t=0;t<300&&!done;t++){
+        const r=Math.random()*N|0,c=Math.random()*N|0,er=r+dr*(chars.length-1),ec=c+dc*(chars.length-1);
+        if(er<0||er>=N||ec<0||ec>=N)continue;
+        const cells=chars.map((ch,k)=>[r+dr*k,c+dc*k]);
+        if(cells.every(([a,b],k)=>G[a][b]===null||G[a][b]===chars[k])){
+          cells.forEach(([a,b],k)=>G[a][b]=chars[k]);placed[i]=cells;done=true}
+      }
+      if(!done)ok=false;
+    }
+    if(ok)break;
+  }
+  for(let r=0;r<N;r++)for(let c=0;c<N;c++)if(G[r][c]===null)G[r][c]=KANA[Math.random()*KANA.length|0];
+}
+
+function render(){
+  found=new Set();path=[];start=null;
+  $('grid').innerHTML='';
+  for(let r=0;r<N;r++)for(let c=0;c<N;c++){
+    const d=document.createElement('div');d.className='c';d.dataset.r=r;d.dataset.c=c;d.textContent=G[r][c];$('grid').appendChild(d)}
+  placed.forEach(cs=>cs.forEach(([r,c])=>cell(r,c).classList.add('a')));
+  let h='',last='';
+  WORDS.forEach((w,i)=>{
+    if(w.l!==last){h+=`<h3>${w.l}</h3>`;last=w.l}
+    h+=`<div class="w" id="w${i}"><span class="e">${w.e}</span><div class="t"><div class="n">${w.n}</div><div class="k">${w.k}</div></div></div>`});
+  $('list').innerHTML=h;count();
+}
+const cell=(r,c)=>$('grid').children[r*N+c];
+const count=()=>$('cnt').textContent=`Encontradas: ${found.size} / ${WORDS.length}`;
+
+function cellAt(x,y){const el=document.elementFromPoint(x,y);return el&&el.closest&&el.closest('.c')}
+function paint(){
+  [...$('grid').children].forEach(e=>e.classList.remove('sel'));
+  path.forEach(([r,c])=>cell(r,c).classList.add('sel'));
+}
+const g=$('grid');
+g.addEventListener('pointerdown',e=>{
+  const c=cellAt(e.clientX,e.clientY);if(!c)return;e.preventDefault();
+  start=[+c.dataset.r,+c.dataset.c];path=[start];paint()});
+g.addEventListener('pointermove',e=>{
+  if(!start)return;const c=cellAt(e.clientX,e.clientY);if(!c)return;
+  const r=+c.dataset.r,k=+c.dataset.c,dr=r-start[0],dc=k-start[1];
+  if(dr&&dc&&Math.abs(dr)!==Math.abs(dc))return;
+  const n=Math.max(Math.abs(dr),Math.abs(dc)),sr=Math.sign(dr),sc=Math.sign(dc);
+  path=Array.from({length:n+1},(_,i)=>[start[0]+sr*i,start[1]+sc*i]);paint()});
+function release(){
+  if(!start)return;
+  const s=path.map(([r,c])=>G[r][c]).join(''),rv=[...s].reverse().join('');
+  const i=WORDS.findIndex((w,i)=>!found.has(i)&&(w.k===s||w.k===rv));
+  start=null;
+  if(i>=0&&path.length>1)win(i,path.slice());
+  path=[];paint();
+}
+window.addEventListener('pointerup',release);
+window.addEventListener('pointercancel',release);
+
+function win(i,cells){
+  found.add(i);
+  const hue=(i*37+10)%360,col=`hsl(${hue} 65% 52%)`;
+  cells.forEach(([r,c])=>{const e=cell(r,c);e.style.setProperty('--fc',col);e.classList.add('f')});
+  $('w'+i).classList.add('d');count();
+  toast(PRAISE[Math.random()*PRAISE.length|0]+'  '+WORDS[i].k);
+  if(found.size===WORDS.length)setTimeout(finish,900);
+}
+let tt;function toast(t){const e=$('toast');e.textContent=t;e.classList.add('s');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('s'),1600)}
+function finish(){
+  const body=`Hola ${user.name},\n\nEstas son las respuestas de tu sopa de letras en katakana:\n\n`+WORDS.map(w=>`${w.n} (${w.l}) = ${w.k}`).join('\n')+`\n\nおめでとう！`;
+  $('mail').href=`mailto:${encodeURIComponent(user.email)}?subject=${encodeURIComponent('Tus respuestas · Sopa de letras カタカナ')}&body=${encodeURIComponent(body)}`;
+  $('end').style.display='flex';
+}
+
+$('f').addEventListener('submit',e=>{
+  e.preventDefault();user={name:$('nm').value.trim(),email:$('em').value.trim()};
+  $('start').style.display='none';$('game').style.display='block';
+  $('hi').textContent='Hola, '+user.name+' · ¡suerte!';
+  build();render();
+});
+$('bk').onclick=function(){const on=$('list').classList.toggle('showk');this.classList.toggle('on',on)};
+$('ba').onclick=function(){const on=$('grid').classList.toggle('ans');this.classList.toggle('on',on)};
+$('br').onclick=()=>{build();render()};
+$('again').onclick=()=>{$('end').style.display='none';build();render()};
+</script>
+</body>
+</html>
